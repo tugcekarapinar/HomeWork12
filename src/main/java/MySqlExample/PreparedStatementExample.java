@@ -7,9 +7,47 @@ import java.sql.SQLException;
 import java.sql.ResultSet;
 
 public class PreparedStatementExample {
-    private String jdbcUrl = "jdbc:mysql://localhost:3306/personel_db";
-    private String username = "root";
-    private String password = "password";
+    private String jdbcUrl;
+    private String username;
+    private String password;
+    private String databaseName;
+
+    public PreparedStatementExample(String jdbcUrl, String username, String password, String databaseName){
+        this.jdbcUrl = jdbcUrl;
+        this.username = username;
+        this.password = password;
+        this.databaseName = databaseName;
+
+        CreateDatabase();
+        this.jdbcUrl += "/" + databaseName;
+        CreateTable();
+    }
+
+    private void CreateDatabase() {
+        String createSQL = "CREATE DATABASE IF NOT EXISTS " + databaseName;
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, username, password);
+             PreparedStatement pstmt = conn.prepareStatement(createSQL)) {
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void CreateTable(){
+        String createTableSQL = "CREATE TABLE IF NOT EXISTS personel (" +
+                "id INT AUTO_INCREMENT PRIMARY KEY, " +
+                "ad VARCHAR(100) NOT NULL, " +
+                "soyad VARCHAR(100) NOT NULL, " +
+                "pozisyon VARCHAR(100), " +
+                "maas DECIMAL(10,2)" +
+                ")";
+        try (Connection conn = DriverManager.getConnection(jdbcUrl, username, password);
+             PreparedStatement pstmt = conn.prepareStatement(createTableSQL)) {
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void Insert(String ad, String soyad, String pozisyon, double maas) {
         String insertSQL = "INSERT INTO personel (ad, soyad, pozisyon, maas) VALUES (?, ?, ?, ?)";
@@ -83,5 +121,4 @@ public class PreparedStatementExample {
             e.printStackTrace();
         }
     }
-
 }
