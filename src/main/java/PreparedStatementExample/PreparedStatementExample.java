@@ -1,4 +1,4 @@
-package MySqlExample;
+package PreparedStatementExample;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
